@@ -43,7 +43,7 @@ int dynA_reachedLimit(dynArray a) {
         if((*a)->arrSize *2 > (*a)->arrSize)
             return dynA_extend(a, (*a)->arrSize*2);
     }
-    return -1;
+    return 0;
 }
 
 int dynA_extend(dynArray a, unsigned long newSize) {
