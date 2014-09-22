@@ -7,10 +7,7 @@
 #include "dynamicArray.h"
 
 dynArray dynA_init() {
-    return dynA_init(256);
-}
-
-dynArray dynA_init(unsigned long size) {
+    int size = 256;
     struct dynamicArray *a = malloc(sizeof(struct dynamicArray));
     if(a == NULL)
         return NULL;
@@ -21,11 +18,12 @@ dynArray dynA_init(unsigned long size) {
         free(a);
         return NULL;
     }
-    dynArray ret = &a;
+    dynArray ret = malloc(sizeof(struct dynamicArray*));
+    (*ret) = a;
     return ret;
 }
 
-void dynA_setFreeFunc(dynArray a, int (*freeFunc)(void*)) {
+void dynA_setFreeFunc(dynArray a, void (*freeFunc)(void*)) {
     (*a)->clearFunc = freeFunc;
 }
 
@@ -47,7 +45,7 @@ int dynA_reachedLimit(dynArray a) {
 }
 
 int dynA_extend(dynArray a, unsigned long newSize) {
-    void* newArr = realloc((*a)->array, sizeof(void*) * newSize);
+    void** newArr = realloc((*a)->array, sizeof(void*) * newSize);
     if(newArr == NULL)
         return -1;
     (*a)->array = newArr;
@@ -68,8 +66,7 @@ int dynA_remove(dynArray a, unsigned long index) {
     unsigned long size = (*a)->currSize-1;
     for(; i < size; i++) {
         if((*a)->clearFunc != NULL)
-            if( (*a)->clearFunc((*a)->array[i]) < 0 )
-                return -1;
+            (*a)->clearFunc((*a)->array[i]);
         (*a)->array[i] = (*a)->array[i+1];
     }
     (*a)->currSize--;
@@ -99,9 +96,9 @@ int dynA_set(dynArray a, unsigned long index, void* val) {
     if(index >= (*a)->currSize)
         return -1;
     if((*a)->clearFunc != NULL)
-        if((*a)->clearFunc((*a)->array[index]) < 0)
-            return -1;
+        (*a)->clearFunc((*a)->array[index]);
     (*a)->array[index] = val;
+    return 0;
 }
 
 int dynA_clear(dynArray a) {
@@ -110,11 +107,11 @@ int dynA_clear(dynArray a) {
     if((*a)->clearFunc != NULL && !dynA_isEmpty(a)) {
         unsigned long i = 0;
         for(; i < (*a)->currSize; i++)
-            if((*a)->clearFunc((*a)->array[i]) != 0)
-                return -2;
+            (*a)->clearFunc((*a)->array[i]);
     }
     free((*a)->array);
     free(*a);
+    free(a);
     // @TODO check that above free worked.
     return 0;
 }

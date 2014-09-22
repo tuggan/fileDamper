@@ -6,14 +6,19 @@
 dynArray fileCRCTable(char *fileName) {
     if(fileName == NULL)
         return NULL;
+
     dynArray a = dynA_init();
 
+    dynA_setFreeFunc(a, free);
 
-    
+    if(a == NULL)
+        printf("Could not allocate array...");
+
+
     const unsigned long buffSize = 1000;
-    
+
     unsigned char *buf = malloc(buffSize);
-    
+
     int fd;
     int bytesRead;
     unsigned long chunk = 0;
@@ -32,18 +37,17 @@ dynArray fileCRCTable(char *fileName) {
         tn->crc = crc32(0, buf, bytesRead);
         tn->chunk = chunk;
         tn->bytesLong = bytesRead;
-        
-        
+
         dynA_append(a, tn);
-        printf("Chunk: %lu Size: %d CRC: %lu\n", tn->chunk, tn->bytesLong, tn->crc);
     }
-    
-    
+
+    free(buf);
+
     close(fd);
 
-    
     return a;
 }
+
 
 
 

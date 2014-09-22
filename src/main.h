@@ -8,6 +8,7 @@
 #include <stdio.h>
 
 #include "libs/fileHandler.h"
+#include "libs/dynamicArray.h"
 
 #endif
 

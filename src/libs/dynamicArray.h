@@ -5,22 +5,21 @@
 #ifndef DYNAMICARRAY_H
 #define DYNAMICARRAY_H
 
+#include <stdio.h>
 #include <stdlib.h>
 
 struct dynamicArray {
     void **array;
     unsigned long currSize;
     unsigned long arrSize;
-    int (*clearFunc)(void*);
+    void (*clearFunc)(void*);
 };
 
 typedef struct dynamicArray **dynArray;
 
 dynArray dynA_init();
 
-dynArray dynA_init(unsigned long size);
-
-void dynA_setFreeFunc(dynArray a, int (*freeFunc)(void*));
+void dynA_setFreeFunc(dynArray a, void (*freeFunc)(void*));
 
 int dynA_append(dynArray a, void* val);
 
