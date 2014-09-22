@@ -14,6 +14,19 @@ int main(int argc, char *argv[]) {
         printf("Chunk: %lu Size: %d CRC: %lu\n", tn->chunk, tn->bytesLong, tn->crc);
     }
 
+    printf("Validating file...\n");
+    dynArray unvalid = validateFile(argv[1], head);
+    if(unvalid == NULL) {
+        printf("File valid!\n");
+    } else {
+        for(i = 0; i < dynA_size(unvalid); i++) {
+            tableNode tn = dynA_get(unvalid, i);
+            printf("Chunk: %lu Size: %d CRC: %lu\n", tn->chunk, tn->bytesLong, tn->crc);
+        }
+    }
+
+    printf("Test done.\n");
+
     dynA_clear(head);
     return 0;
 }

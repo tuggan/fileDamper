@@ -4,6 +4,8 @@
 #ifndef FILEHANDLER_H
 #define FILEHANDLER_H
 
+#define CHUNKSIZE 65535
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <zlib.h>
@@ -19,6 +21,8 @@ struct crcHeader {
 typedef struct crcHeader *tableNode;
 
 dynArray fileCRCTable(char *fileName);
+
+dynArray validateFile(char* fileName, dynArray crcTable);
 
 #endif
 
