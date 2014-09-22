@@ -1,3 +1,4 @@
+#!/bin/bash
 #Just a simple script to keep all unesessary files in a diffrent dir
 mkdir -p build
 cd build
