@@ -68,10 +68,12 @@ int dynA_remove(dynArray a, unsigned long index) {
     unsigned long size = (*a)->currSize-1;
     for(; i < size; i++) {
         if((*a)->clearFunc != NULL)
-            (*a)->clearFunc((*a)->array[i]);
+            if( (*a)->clearFunc((*a)->array[i]) < 0 )
+                return -1;
         (*a)->array[i] = (*a)->array[i+1];
     }
     (*a)->currSize--;
+    return 0;
 }
 
 int dynA_insert(dynArray a, unsigned long index, void* val) {
@@ -84,6 +86,7 @@ int dynA_insert(dynArray a, unsigned long index, void* val) {
     }
     (*a)->array[index] = val;
     (*a)->currSize++;
+    return 0;
 }
 
 void* dynA_get(dynArray a, unsigned long index) {
@@ -96,7 +99,8 @@ int dynA_set(dynArray a, unsigned long index, void* val) {
     if(index >= (*a)->currSize)
         return -1;
     if((*a)->clearFunc != NULL)
-        (*a)->clearFunc((*a)->array[index]);
+        if((*a)->clearFunc((*a)->array[index]) < 0)
+            return -1;
     (*a)->array[index] = val;
 }
 
@@ -111,6 +115,8 @@ int dynA_clear(dynArray a) {
     }
     free((*a)->array);
     free(*a);
+    // @TODO check that above free worked.
+    return 0;
 }
 
 
