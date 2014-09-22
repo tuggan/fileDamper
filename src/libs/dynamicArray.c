@@ -52,6 +52,7 @@ int dynA_extend(dynArray a, unsigned long newSize) {
         return -1;
     (*a)->array = newArr;
     (*a)->arrSize = newSize;
+    return 0;
 }
 
 unsigned long dynA_size(dynArray a) {
