@@ -1,36 +1,67 @@
-/**
-  * This is a udp server thingie that can handle only one client.
-  *
-  * A lot of orrors, i have no idea what yet tho, or if im using it right.
-  * 1 - Could not create socket.
-  * 2 - Could not bind socket.
-  */
 #include "server.h"
 
-struct netSrvr setupListen(int lPort) {
-    int fd;
+netSrv nets_setupListen() {
+    char* port = "37300";
+    int status;
 
-// Open a socket of type udp (SOCK_DGRAM)
-    fd = socket(AF_INET, SOCK_DGRAM, 0);
+    struct networkServer *hints = calloc(1 ,sizeof(struct networkServer));
 
-    if(fd < 0) {
-        error(1, 0, "Could not open socket.");
+    memset(hints, 0, sizeof(struct networkServer));
+
+    // @TODO This should not be static!
+    hints->addr.ai_family = AF_UNSPEC; // Dont care wheter IPv4 or v6
+    hints->addr.ai_socktype = SOCK_STREAM; // Set TCP
+    hints->addr.ai_flags = AI_PASSIVE; // Fill in ip for me
+
+    status = getaddrinfo(NULL, port, &(hints->addr), &hints->info);
+
+    if(status != 0) {
+        fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+        exit(1);
     }
 
-    struct netSrvr addr;
-
-    memset((char *)&addr.inAddr, 0, sizeof(addr.inAddr));
-    addr.inAddr.sin_family = AF_INET;
-    addr.inAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.inAddr.sin_port = htons(lPort);
-
-    if (bind(fd, (struct sockaddr *)&addr.inAddr, sizeof(addr.inAddr)) < 0) {
-        error(2, 0, "Could not bind socket.");
-    }
-
-    return addr;
+    netSrv ret = malloc(sizeof(struct networkServer*));
+    (*ret) = hints;
+    return ret;
 }
 
+void nets_bindSocket(netSrv net) {
+    int s;
+
+    s = socket((*net)->info->ai_family,
+               (*net)->info->ai_socktype,
+               (*net)->info->ai_socktype);
+
+    // @TODO error chocking on socket.
+
+    (*net)->sockfd = s;
+
+    bind((*net)->sockfd, (*net)->info->ai_addr, (*net)->info->ai_addrlen);
+
+    // @TODO error check bind!
+
+}
+
+int nets_listenForNew(netSrv net) {
+    listen((*net)->sockfd, BACKLOG);
+
+    struct sockaddr_storage their_addr;
+    socklen_t addr_size;
+
+    addr_size = sizeof(their_addr);
+    int newfd = accept((*net)->sockfd, (struct sockaddr *)&their_addr, &addr_size);
+    return newfd;
+}
+
+int nets_rec(int socket, char *buf, int buflen) {
+    return recv(socket, buf, buflen, 0);
+}
+
+void nets_close(netSrv net) {
+    freeaddrinfo((*net)->info);
+    free(*net);
+    free(net);
+}
 
 
 

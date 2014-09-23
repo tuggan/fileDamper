@@ -1,34 +1,75 @@
 #include "main.h"
 
 int main(int argc, char *argv[]) {
-    if(argc == 1)
-        return 1;
-
-    printf("Reading file \"%s\"\n", argv[1]);
-    dynArray head = fileCRCTable(argv[1]);
-
-    printf("Replaying crc table\n");
-    unsigned long i;
-    for(i = 0; i < dynA_size(head); i++) {
-        tableNode tn = dynA_get(head, i);
-        printf("Chunk: %lu Size: %d CRC: %lu\n", tn->chunk, tn->bytesLong, tn->crc);
-    }
-
-    printf("Validating file...\n");
-    dynArray unvalid = validateFile(argv[1], head);
-    if(unvalid == NULL) {
-        printf("File valid!\n");
-    } else {
-        for(i = 0; i < dynA_size(unvalid); i++) {
-            tableNode tn = dynA_get(unvalid, i);
-            printf("Chunk: %lu Size: %d CRC: %lu\n", tn->chunk, tn->bytesLong, tn->crc);
+    char* fileName = NULL, *crcSaveFile = NULL, *loadFile = NULL;
+    int validate = 0;
+    int crcCheck = 0;
+    int serverMode = 0;
+    int opt;
+    while((opt = getopt(argc, argv, "hcVf:s:l:S")) != -1) {
+        switch(opt) {
+        case 'h':
+            printHelp(argv[0]);
+            exit(0);
+            break;
+        case 'f':
+            fileName = optarg;
+            break;
+        case 's':
+            crcSaveFile = optarg;
+            break;
+        case 'l':
+            loadFile = optarg;
+            break;
+        case 'V':
+            validate = 1;
+            break;
+        case 'c':
+            crcCheck = 1;
+            break;
+        case 'S':
+            serverMode = 1;
+            break;
         }
     }
 
-    printf("Test done.\n");
+    if(serverMode) {
+        printf("Starting server mode.\n");
+        fflush(stdout);
+        netSrv srv = nets_setupListen();
+        printf("Bind socket.");
+        fflush(stdout);
+        nets_bindSocket(srv);
+        printf("Listen for new com\n");
+        fflush(stdout);
+        int soc = nets_listenForNew(srv);
+        int buffsize = 65355;
+        int read;
+        char* buff = malloc(buffsize*sizeof(char));
+        printf("Read inc traffic or something.\n");
+        fflush(stdout);
+        while((read = nets_rec(soc, buff, buffsize)) > 0) {
+            printf("%s\n", buff);
+        }
+        printf("Quitting!\n");
+        fflush(stdout);
+        free(buff);
+        nets_close(srv);
+    }
 
-    dynA_clear(head);
     return 0;
+}
+
+void printHelp(char* progName) {
+    printf("%s [options]\n", progName);
+    char* helpString = "\
+    -h        | Print help and quit\n\
+    -f <file> | File to read?\n\
+    -s <file> | Save crc to this file.\n\
+    -l <file> | Load crc from file\n\
+    -V        | Validate the file\n\
+    -c        | run crc check on file\n";
+    printf("%s", helpString);
 }
 
 

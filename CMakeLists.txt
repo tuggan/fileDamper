@@ -5,6 +5,7 @@ fileDamper
 src/main.c
 src/libs/fileHandler.c
 src/libs/dynamicArray.c
+src/network/server.c
 )
 target_link_libraries(fileDamper z)
 ADD_DEFINITIONS(

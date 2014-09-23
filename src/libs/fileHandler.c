@@ -98,6 +98,30 @@ dynArray validateFile(char* fileName, dynArray crcTable) {
     return NULL;
 }
 
+int saveCRCTableToFile(char *fileName, dynArray crcTable) {
+    FILE * f;
+    unsigned long i;
+    f = fopen(fileName, "w");
+    for(i = 0; i < dynA_size(crcTable); i++) {
+        tableNode tn = dynA_get(crcTable, i);
+        fprintf(f, "%lu;%d;%lu\n", tn->chunk, tn->bytesLong, tn->crc);
+    }
+    fclose(f);
+    return 0;
+}
+
+dynArray loadCRCTableFile(char* fileName) {
+
+    FILE *f;
+    f = fopen(fileName, "r");
+    char buff[256];
+    while(fgets(buff, 256, f) != NULL) {
+        
+    }
+    return NULL;
+}
+
+
 
 
 
