@@ -30,13 +30,25 @@ void nets_bindSocket(netSrv net) {
 
     s = socket((*net)->info->ai_family,
                (*net)->info->ai_socktype,
-               (*net)->info->ai_socktype);
+               (*net)->info->ai_protocol);
+
+    if(s == -1) {
+        fprintf(stderr, "socket error: %s\n", gai_strerror(s));
+        exit(1);
+    }
 
     // @TODO error chocking on socket.
 
     (*net)->sockfd = s;
 
-    bind((*net)->sockfd, (*net)->info->ai_addr, (*net)->info->ai_addrlen);
+    int b = bind((*net)->sockfd,
+                 (*net)->info->ai_addr,
+                 (*net)->info->ai_addrlen);
+
+    if( b == -1) {
+        fprintf(stderr, "bind error: %s\n", gai_strerror(b));
+        exit(1);
+    }
 
     // @TODO error check bind!
 

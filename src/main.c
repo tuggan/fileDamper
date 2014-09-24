@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
         printf("Starting server mode.\n");
         fflush(stdout);
         netSrv srv = nets_setupListen();
-        printf("Bind socket.");
+        printf("Bind socket.\n");
         fflush(stdout);
         nets_bindSocket(srv);
         printf("Listen for new com\n");
@@ -49,7 +49,9 @@ int main(int argc, char *argv[]) {
         printf("Read inc traffic or something.\n");
         fflush(stdout);
         while((read = nets_rec(soc, buff, buffsize)) > 0) {
+            buff[read] = '\0';
             printf("%s\n", buff);
+            buff[0] = '\0';
         }
         printf("Quitting!\n");
         fflush(stdout);
