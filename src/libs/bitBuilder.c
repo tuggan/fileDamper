@@ -111,21 +111,6 @@ char * getStream(void *stream, unsigned long offset, unsigned long size) {
     return ret;
 }
 
-int main() {
-    unsigned long size = sizeof(char)+sizeof(int);
-    char * test = calloc(1, size);
-
-    setBit(test, 1, 2, 1);
-
-    char s = getBit(test, 1, 2);
-
-    char * string = bitsToString(test, size);;
-    free(test);
-    printf("Bits: \"%s\"\n", string);
-    printf("Bit: \"%d\"\n", s);
-    free(string);
-}
-
 
 
 
