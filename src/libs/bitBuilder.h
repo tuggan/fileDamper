@@ -5,16 +5,6 @@
 #ifndef BITBUILDER_H
 #define BITBUILDER_H
 
-/**
- * Remove this!
- */
-
-#include <stdio.h>
-
-/**
- * To this!
- */
-
 #include <stdlib.h>
 #include <limits.h>
 
