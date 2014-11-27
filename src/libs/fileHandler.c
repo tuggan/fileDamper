@@ -11,6 +11,7 @@ dynArray fileCRCTable(char *fileName) {
 
     dynA_setFreeFunc(a, free);
 
+    // @TODO what did i think here? Did i even think?
     if(a == NULL)
         printf("Could not allocate array...");
 
@@ -32,7 +33,7 @@ dynArray fileCRCTable(char *fileName) {
 
     while((bytesRead = pread(fd, buf, buffSize, chunk*buffSize))) {
         chunk++;
-        tableNode tn = malloc(sizeof(tableNode));
+        tableNode tn = malloc(sizeof(struct crcHeader));
 
         tn->crc = crc32(0, buf, bytesRead);
         tn->chunk = chunk;
@@ -44,6 +45,8 @@ dynArray fileCRCTable(char *fileName) {
     free(buf);
 
     close(fd);
+
+    dynA_setFreeFunc(a, free);
 
     return a;
 }
@@ -120,8 +123,6 @@ dynArray loadCRCTableFile(char* fileName) {
     }
     return NULL;
 }
-
-
 
 
 

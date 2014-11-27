@@ -69,6 +69,11 @@ int nets_rec(int socket, char *buf, int buflen) {
     return recv(socket, buf, buflen, 0);
 }
 
+int nets_send(int socket, char *buf, int buflen) {
+    // @TODO Change signals...
+    return send(socket, buf, buflen, MSG_NOSIGNAL);
+}
+
 void nets_close(netSrv net) {
     freeaddrinfo((*net)->info);
     free(*net);

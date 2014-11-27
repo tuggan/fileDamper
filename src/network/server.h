@@ -29,9 +29,13 @@ int nets_listenForNew(netSrv net);
 
 int nets_rec(int socket, char *buf, int buflen);
 
+int nets_send(int socket, char *buf, int buflen);
+
 void nets_close(netSrv net);
 
 #endif
+
+
 
 
 

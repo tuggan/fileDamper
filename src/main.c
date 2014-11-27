@@ -33,6 +33,30 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    if(crcCheck) {
+        if(!fileName) {
+            printf("No file specified!\n");
+            printHelp(argv[0]);
+            exit(1);
+        }
+        dynArray a = fileCRCTable(fileName);
+        if(a == NULL) {
+            printf("File could not be read!\n");
+            exit(1);
+        }
+        if(dynA_isEmpty(a)) {
+            printf("Something wierd happend :s\n");
+            exit(1);
+        }
+        printf("Index\t\tCRC\n");
+        unsigned long i;
+        for(i = 0; i < dynA_size(a); i++) {
+            struct crcHeader *h = (struct crcHeader*)dynA_get(a, i);
+            printf("%lu\t\t%lu\n", h->chunk, h->crc);
+        }
+        dynA_clear(a);
+    }
+
     if(serverMode) {
         printf("Starting server mode.\n");
         fflush(stdout);
@@ -70,7 +94,7 @@ void printHelp(char* progName) {
     -s <file> | Save crc to this file.\n\
     -l <file> | Load crc from file\n\
     -V        | Validate the file\n\
-    -c        | run crc check on file\n";
+    -c        | Run crc check on file\n";
     printf("%s", helpString);
 }
 

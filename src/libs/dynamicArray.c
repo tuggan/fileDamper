@@ -113,6 +113,7 @@ int dynA_clear(dynArray a) {
     free(*a);
     free(a);
     // @TODO check that above free worked.
+    // Id did :)
     return 0;
 }
 

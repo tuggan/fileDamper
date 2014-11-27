@@ -7,6 +7,7 @@
 #define CHUNKSIZE 65535
 
 #include <stdio.h>
+#include <string.h>
 #include <fcntl.h>
 #include <zlib.h>
 
